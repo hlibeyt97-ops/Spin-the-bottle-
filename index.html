@@ -13,7 +13,8 @@
             font-family: Arial, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #b87333 0%, #8b4513 50%, #4a2511 100%);
+            /* Şəkildəki orijinal parlaq taxta masa tonu */
+            background: radial-gradient(circle at center, #f0a54a 0%, #d88330 60%, #b25e19 100%);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -28,7 +29,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 15px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(5px);
             z-index: 100;
         }
@@ -54,14 +55,23 @@
         .icon-btn.orange {
             background: #ff9800;
         }
-        .badge-tag {
+        .badge-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             background: #d32f2f;
             color: white;
-            padding: 5px 10px;
+            padding: 3px 10px;
             border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .badge-group .number {
             font-size: 12px;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .badge-group .time {
+            font-size: 9px;
+            opacity: 0.9;
         }
         .circle-btn {
             width: 36px;
@@ -158,8 +168,9 @@
             top: 38%;
             font-size: 14px;
             font-weight: bold;
+            color: #fff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.25);
             padding: 6px 16px;
             border-radius: 20px;
             letter-spacing: 0.5px;
@@ -268,7 +279,10 @@
         <div class="top-left">
             <button class="icon-btn">❤️ 2</button>
             <button class="icon-btn orange">⚔️</button>
-            <span class="badge-tag">#20</span>
+            <div class="badge-group">
+                <span class="number">#18</span>
+                <span class="time">13 hr.</span>
+            </div>
         </div>
         <div class="top-right">
             <div class="table-info">Masa 510 🔄</div>
