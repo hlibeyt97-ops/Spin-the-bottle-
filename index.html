@@ -133,43 +133,55 @@
             margin-left: 8px;
             border-radius: 20px;
             cursor: pointer;
-        }.bottle {
+}body {
+    background: linear-gradient(135deg, #b87333 0%, #8b4513 50%, #4a2511 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.bottle {
     width: 45px;
     height: 140px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(46,125,50,0.8) 50%, rgba(27,94,32,0.9) 100%);
-    border-radius: 20px 20px 10px 10px;
+    background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(255,255,255,0.4) 30%, rgba(27,94,32,0.85) 50%, rgba(0,0,0,0.4) 100%), #1b5e20;
+    border-radius: 22px 22px 12px 12px;
     position: relative;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Şüşənin qapağı */
 .bottle::before {
     content: '';
     position: absolute;
-    top: -12px;
+    top: -10px;
     left: 14px;
     width: 17px;
-    height: 12px;
+    height: 10px;
     background: #d32f2f;
     border-radius: 4px 4px 0 0;
-    box-shadow: inset 0 1px 2px rgba(255,255,255,0.5);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.6);
 }
 
+/* Üzərindəki qırmızı Coca-Cola etiketi */
 .bottle::after {
-    content: 'COCA';
+    content: 'Coca-Cola';
     position: absolute;
-    top: 45px;
-    left: 5px;
-    width: 33px;
+    top: 48px;
+    left: 2px;
+    width: 41px;
     height: 18px;
     background: #d32f2f;
     color: white;
-    font-size: 8px;
+    font-size: 6.5px;
     font-weight: bold;
     text-align: center;
     line-height: 18px;
     border-radius: 3px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    transform: rotate(-3deg);
 }
 
     </style>
