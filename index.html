@@ -2,270 +2,560 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#17795a">
-    <title>Putulka</title>
-    <link rel="stylesheet" href="/ok-lobby.css?v=11">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spin The Bottle</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
+        body {
+            background: radial-gradient(circle at center, #f0a54a 0%, #d88330 60%, #b25e19 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Üst Panel */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+        .top-left, .top-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-btn {
+            background: #d32f2f;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .icon-btn.orange {
+            background: #ff9800;
+        }
+        .badge-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #d32f2f;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        .badge-group .number {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-group .time {
+            font-size: 9px;
+            opacity: 0.9;
+        }
+        .circle-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff9800;
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .circle-btn .red-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+            border: 1px solid #fff;
+        }
+        .table-info {
+            background: #ff9800;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Dropdown Menyü */
+        .dropdown-menu {
+            position: absolute;
+            top: 55px;
+            right: 15px;
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            width: 170px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .dropdown-menu.active {
+            display: flex;
+        }
+        .dropdown-item {
+            padding: 12px 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+        .dropdown-item .red-dot {
+            width: 8px;
+            height: 8px;
+            background: red;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        /* Oyun Masası */
+        .table-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-status {
+            position: absolute;
+            top: 38%;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 6px 16px;
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        /* Coca-Cola Şüşəsi */
+        .bottle-container {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .bottle {
+            width: 45px;
+            height: 140px;
+            background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(255,255,255,0.3) 30%, rgba(60, 20, 10, 0.9) 50%, rgba(20, 5, 2, 0.95) 100%), #2b1205;
+            border-radius: 22px 22px 12px 12px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .bottle::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 14px;
+            width: 17px;
+            height: 10px;
+            background: #d32f2f;
+            border-radius: 4px 4px 0 0;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.6);
+        }
+
+        .bottle::after {
+            content: 'Coca-Cola';
+            position: absolute;
+            top: 48px;
+            left: 2px;
+            width: 41px;
+            height: 18px;
+            background: #d32f2f;
+            color: white;
+            font-size: 6.5px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 18px;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            transform: rotate(-3deg);
+        }
+
+        /* Oyunçular */
+        .player {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .player img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #ff9800;
+            object-fit: cover;
+            background: #ccc;
+        }
+        .player .name {
+            margin-top: 5px;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .p-top-left { top: 20px; left: 30px; }
+        .p-top-right { top: 20px; right: 30px; }
+        .p-bottom { bottom: 20px; }
+
+        /* Çat Bölməsi */
+        .chat-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            max-height: 150px;
+        }
+        .chat-messages {
+            overflow-y: auto;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .chat-msg span {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .chat-input-area {
+            display: flex;
+        }
+        .chat-input-area input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            color: #fff;
+            border-radius: 20px;
+            outline: none;
+        }
+        .chat-input-area button {
+            background: #ff9800;
+            border: none;
+            color: #fff;
+            padding: 0 15px;
+            margin-left: 8px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Modallar (Popup pəncərələr) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-card {
+            background: #fff;
+            color: #333;
+            width: 90%;
+            max-width: 380px;
+            max-height: 80vh;
+            border-radius: 16px;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            background: #00bcd4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #1a237e;
+        }
+    </style>
 </head>
 <body>
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-        <symbol id="i-bottle" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2h4v4.2c0 .6.3 1.1.7 1.5A6 6 0 0 1 17 12.4V20a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7.6a6 6 0 0 1 2.3-4.7c.4-.4.7-.9.7-1.5z"/></symbol>
-        <symbol id="i-feed" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 5h16M4 12h16M4 19h10"/></symbol>
-        <symbol id="i-msg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5h16v11H9l-5 4z"/></symbol>
-        <symbol id="i-talk" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 6h12v8H7l-4 3zM15 9h6v8l-3-2h-6v-1"/></symbol>
-        <symbol id="i-bell" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></symbol>
-        <symbol id="i-steps" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M8 3c2 0 3 2 3 5s-1 6-3 6-3-3-3-6 1-5 3-5zM16 9c2 0 3 2 3 5s-1 6-3 6-3-3-3-6 1-5 3-5z"/></symbol>
-        <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></symbol>
-        <symbol id="i-heart-o" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10z"/></symbol>
-        <symbol id="i-video" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 6h13v12H3zM16 10l5-3v10l-5-3"/></symbol>
-        <symbol id="i-music" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M9 18V5l11-2v13M9 18a3 3 0 1 1-3-3 3 3 0 0 1 3 3zM20 16a3 3 0 1 1-3-3 3 3 0 0 1 3 3z"/></symbol>
-        <symbol id="i-cal" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5"/></symbol>
-        <symbol id="i-search" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zM16 16l5 5"/></symbol>
-        <symbol id="i-user" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
-        <symbol id="i-users" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M9 5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zM2.5 20c.8-3.5 3.3-5 6.5-5s5.7 1.5 6.5 5M16 6a3 3 0 0 1 0 6M18 15c2 .6 3.2 2.2 3.5 5"/></symbol>
-        <symbol id="i-photo" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 6h18v13H3zM3 16l5-5 4 4 3-3 6 6"/></symbol>
-        <symbol id="i-group" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></symbol>
-        <symbol id="i-game" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M6 8h12a4 4 0 0 1 4 4v1a4 4 0 0 1-7 2.6L14 15h-4l-1 .6A4 4 0 0 1 2 13v-1a4 4 0 0 1 4-4zM7 11v3M5.5 12.5h3M16 12h.01M18 13.5h.01"/></symbol>
-        <symbol id="i-gift" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7c-1-3-5-4-5-1 0 1 2 1 5 1zM12 7c1-3 5-4 5-1 0 1-2 1-5 1z"/></symbol>
-        <symbol id="i-clip" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM10 9l5 3-5 3z"/></symbol>
-        <symbol id="i-date" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M8.5 13S4 10.4 4 7.3A2.6 2.6 0 0 1 8.5 5.6 2.6 2.6 0 0 1 13 7.3c0 3.1-4.5 5.7-4.5 5.7zM15.5 20S11 17.4 11 14.3a2.6 2.6 0 0 1 4.5-1.7 2.6 2.6 0 0 1 4.5 1.7c0 3.1-4.5 5.7-4.5 5.7z"/></symbol>
-        <symbol id="i-wallet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3zM3 7l12-3v3M16 13h2"/></symbol>
-        <symbol id="i-cog" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
-        <symbol id="i-share" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M14 5l7 6-7 6v-4c-5 0-8 1.5-10 5 .5-5 3-9 10-10z"/></symbol>
-        <symbol id="i-comment" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5h16v11h-7l-5 4v-4H4z"/></symbol>
-        <symbol id="i-topic" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 4h14M5 9h10M5 14h14M5 19h7"/></symbol>
-        <symbol id="i-flag" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 21V4h11l-2 4 2 4H5"/></symbol>
-        <symbol id="i-bookmark" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M6 3h12v18l-6-4-6 4z"/></symbol>
-        <symbol id="i-party" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 20l5-14 9 9zM13 5l1-2M18 9l2-1M16 6l2-2"/></symbol>
-        <symbol id="i-ghost" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 21V10a7 7 0 0 1 14 0v11l-3-2-2 2-2-2-2 2-2-2zM9 10h.01M15 10h.01"/></symbol>
-        <symbol id="i-moon" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></symbol>
-        <symbol id="i-home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M3 11l9-7 9 7M5 9.5V20h5v-6h4v6h5V9.5"/></symbol>
-        <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></symbol>
-        <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
-        <symbol id="i-out" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></symbol>
-    </svg>
 
-    <section class="login" id="login" hidden aria-label="Giriş">
-        <div class="login-art">
-            <div class="rings" aria-hidden="true"><i></i><i></i></div>
-            <div class="logo">
-                <span class="mark"><svg viewBox="0 0 24 24"><use href="#i-bottle" color="#fff"/></svg></span>
-                <span class="site-name">putulka</span>
-            </div>
-            <div>
-                <h1>Dostların, şüşə və söhbət bir yerdə</h1>
-                <p>Tanış ol, lentə yaz, fotolarını paylaş və bir kliklə masaya keçib şüşəni fırlat.</p>
-            </div>
-            <div class="login-stats">
-                <div><b>🍾</b><span>şüşə fırlat</span></div>
-                <div><b>💬</b><span>söhbət</span></div>
-                <div><b>🎁</b><span>hədiyyələr</span></div>
+    <!-- Üst Panel -->
+    <div class="top-bar">
+        <div class="top-left">
+            <button class="icon-btn" onclick="openModal('modal-heart')">❤️ 2</button>
+            <button class="icon-btn orange" onclick="openModal('modal-rank')">⚔️</button>
+            <div class="badge-group" onclick="openModal('modal-leagues')">
+                <span class="number">#18</span>
+                <span class="time">13 hr.</span>
             </div>
         </div>
-        <div class="login-side">
-            <form class="login-card" id="login-form" novalidate>
-                <h2 id="login-title">Daxil ol</h2>
-                <div class="tabs2" role="tablist">
-                    <button type="button" role="tab" aria-selected="true" id="tab-in">Giriş</button>
-                    <button type="button" role="tab" aria-selected="false" id="tab-reg">Qeydiyyat</button>
-                </div>
-                <div class="field">
-                    <label for="f-login">Nik</label>
-                    <input id="f-login" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
-                </div>
-                <div class="field">
-                    <label for="f-pass">Parol</label>
-                    <input id="f-pass" type="password" autocomplete="current-password" required>
-                </div>
-                <div class="field" id="row-pass2" hidden>
-                    <label for="f-pass2">Parol (təkrar)</label>
-                    <input id="f-pass2" type="password" autocomplete="new-password">
-                </div>
-                <div class="field" id="row-gender" hidden>
-                    <span class="lbl">Cins</span>
-                    <div class="gender">
-                        <label><input type="radio" name="gender" value="female" checked="checked"> Qız</label>
-                        <label><input type="radio" name="gender" value="male"> Oğlan</label>
-                    </div>
-                </div>
-                <p class="reg-note" id="reg-note" role="note" hidden></p>
-                <p class="form-err" id="login-err" role="alert" hidden></p>
-                <button class="btn btn-primary" type="submit" id="login-btn">Daxil ol</button>
-                <div class="or">və ya</div>
-                <button class="btn btn-ghost center-text" type="button" data-qoca="1">Qoca style girişi (köhnə dizayn)</button>
-                <p class="fine">Daxil olmaqla oyunun qaydalarını qəbul edirsən</p>
-            </form>
+        <div class="top-right">
+            <div class="table-info">Masa 510 🔄</div>
+            <button class="circle-btn" id="settings-btn" onclick="openModal('modal-settings')">⚙️</button>
+            <button class="circle-btn" id="menu-toggle">
+                ☰
+                <span class="red-dot"></span>
+            </button>
         </div>
-    </section>
-
-    <div class="app" id="app" hidden>
-        <header class="top">
-            <div class="top-in">
-                <button class="ic m-only" id="burger" type="button" aria-label="Menyu" aria-expanded="false" aria-controls="drawer">
-                    <svg><use href="#i-menu"/></svg>
-                </button>
-                <a class="logo" href="#lent">
-                    <span class="mark"><svg viewBox="0 0 24 24"><use href="#i-bottle" color="#fff"/></svg></span>
-                    <span class="site-name">putulka</span>
-                </a>
-                <nav class="top-icons" aria-label="Yuxarı menyu">
-                    <a class="ic" href="#lent" data-sec="lent" title="Ana səhifə" aria-label="Ana səhifə"><svg><use href="#i-home"/></svg></a>
-                    <a class="ic" href="#mesajlar" data-sec="mesajlar" title="Mesajlar"><svg><use href="#i-msg"/></svg><span class="badge" data-badge="msg" hidden></span></a>
-                    <a class="ic" href="#muzakire" data-sec="muzakire" title="Müzakirələr"><svg><use href="#i-talk"/></svg></a>
-                    <a class="ic" href="#bildirisler" data-sec="bildirisler" title="Bildirişlər"><svg><use href="#i-bell"/></svg><span class="badge" data-badge="notif" hidden></span></a>
-                    <a class="ic" href="#qonaqlar" data-sec="qonaqlar" title="Qonaqlar"><svg><use href="#i-steps"/></svg><span class="badge" data-badge="guests" hidden></span></a>
-                    <a class="ic" href="#hadiseler" data-sec="hadiseler" title="Hadisələr (bəyənmələr və şərhlər)"><svg><use href="#i-heart-o"/></svg></a>
-                    <a class="ic" href="#klipler" data-sec="klipler" title="Video"><svg><use href="#i-video"/></svg></a>
-                    <a class="ic" href="/game-v2" title="Oyun və musiqi"><svg><use href="#i-music"/></svg></a>
-                    <a class="ic" href="#bayramlar" data-sec="bayramlar" title="Bu gün"><svg><use href="#i-cal"/></svg></a>
-                </nav>
-                <nav class="m-icons m-only" aria-label="Əsas bölmələr">
-                    <a class="ic" href="#lent" data-sec="lent" title="Ana səhifə" aria-label="Ana səhifə"><svg><use href="#i-home"/></svg></a>
-                    <a class="ic" href="#mesajlar" data-sec="mesajlar" title="Mesajlar"><svg><use href="#i-msg"/></svg><span class="badge" data-badge="msg" hidden></span></a>
-                    <a class="ic" href="#muzakire" data-sec="muzakire" title="Müzakirələr"><svg><use href="#i-talk"/></svg></a>
-                    <a class="ic" href="#bayramlar" data-sec="bayramlar" title="Bu gün"><svg><use href="#i-cal"/></svg></a>
-                    <a class="ic" href="#bildirisler" data-sec="bildirisler" title="Bildirişlər"><svg><use href="#i-bell"/></svg><span class="badge" data-badge="notif" hidden></span></a>
-                    <a class="ic" href="#dostlar/axtar" title="Axtar"><svg><use href="#i-search"/></svg></a>
-                </nav>
-                <form class="search" id="search-form" role="search">
-                    <svg width="16" height="16"><use href="#i-search"/></svg>
-                    <label class="sr" for="q">Saytda axtar</label>
-                    <input id="q" placeholder="Saytda axtar" autocomplete="off">
-                </form>
-                <button class="me-chip" id="me-chip" type="button" aria-haspopup="menu" title="Profil tənzimləmələri"></button>
-                <div class="me-menu" id="me-menu" role="menu" hidden>
-                    <a role="menuitem" href="#profil">Profilim</a>
-                    <a role="menuitem" href="#tenzimlemeler">Tənzimləmələr</a>
-                    <button role="menuitem" type="button" id="theme-btn">Mövzu: işıqlı / qaranlıq</button>
-                    <button role="menuitem" type="button" data-qoca="1">Qoca style (köhnə dizayn)</button>
-                    <button role="menuitem" type="button" id="logout-btn">Çıxış</button>
-                </div>
-            </div>
-        </header>
-        <div class="shell">
-            <aside class="left" aria-label="Sol menyu">
-                <a class="me-photo" id="me-photo" href="#profil" aria-label="Profilim"></a>
-                <a class="btn btn-ghost center-text" href="#lent" id="post-btn">+ Dərc et</a>
-                <div class="ss-switch2" role="group" aria-label="Dizayn seçimi">
-                    <button type="button" data-qoca="1" aria-pressed="false">Qoca style</button>
-                    <button type="button" aria-pressed="true">OK stil ✨</button>
-                </div>
-                <nav class="menu" id="menu">
-                    <a href="#profil" data-sec="profil"><svg><use href="#i-user"/></svg><span id="me-name-menu">Profilim</span></a>
-                    <a href="#lent" data-sec="lent"><svg><use href="#i-feed"/></svg>Lent</a>
-                    <a href="#movzular" data-sec="movzular"><svg><use href="#i-topic"/></svg>Mövzular</a>
-                    <a href="#dostlar" data-sec="dostlar"><svg><use href="#i-users"/></svg>Dostlar<span class="count" data-badge="req" hidden></span></a>
-                    <a href="#fotolar" data-sec="fotolar"><svg><use href="#i-photo"/></svg>Fotoşəkil</a>
-                    <a href="#qruplar" data-sec="qruplar"><svg><use href="#i-group"/></svg>Qruplar</a>
-                    <a href="#oyunlar" data-sec="oyunlar"><svg><use href="#i-game"/></svg>Oyunlar</a>
-                    <a href="#hediyyeler" data-sec="hediyyeler"><svg><use href="#i-gift"/></svg>Hədiyyələr</a>
-                    <a href="#klipler" data-sec="klipler"><svg><use href="#i-video"/></svg>Video</a>
-                    <a href="#tanisliq" data-sec="tanisliq"><svg><use href="#i-date"/></svg>Tanışlıq</a>
-                    <a href="#afisa" data-sec="afisa"><svg><use href="#i-flag"/></svg>Afişa</a>
-                    <a href="#odenisler" data-sec="odenisler"><svg><use href="#i-wallet"/></svg>Ödənişlər və abunəliklər</a>
-                    <a href="#magaza" data-sec="magaza"><svg><use href="#i-gift"/></svg>Mağaza</a>
-                    <hr>
-                    <div class="toggle">
-                        <span><svg><use href="#i-ghost"/></svg>Gözəgörünməz</span>
-                        <button class="switch" id="ghost" type="button" aria-pressed="false" aria-label="Gözəgörünməz"></button>
-                    </div>
-                    <a href="#elfecinler" data-sec="elfecinler"><svg><use href="#i-bookmark"/></svg>Əlfəcinlər</a>
-                    <a href="#bayramlar" data-sec="bayramlar"><svg><use href="#i-party"/></svg>Bayramlar</a>
-                    <a href="#dostlar/axtar" data-sec="dostlar"><svg><use href="#i-search"/></svg>Dostları tapmaq</a>
-                    <a href="#tenzimlemeler" data-sec="tenzimlemeler"><svg><use href="#i-cog"/></svg>Tənzimləmələr</a>
-                </nav>
-            </aside>
-            <main class="center" id="center" aria-live="polite"></main>
-            <aside class="right" aria-label="Təkliflər">
-                <section class="card pad" id="game-group" hidden></section>
-                <section class="card pad">
-                    <div class="section-title">
-                        <h3>Tanıya bilərsən</h3>
-                        <a class="linkish" href="#dostlar/mumkun">Hamısı</a>
-                    </div>
-                    <div class="people" id="maybe"><p class="muted">Yüklənir...</p></div>
-                </section>
-                <section class="card pad">
-                    <div class="section-title">
-                        <h3>Saytda olan dostlar</h3>
-                        <a class="linkish" href="#dostlar/saytda">Hamısı</a>
-                    </div>
-                    <div class="people" id="online"><p class="muted">Yüklənir...</p></div>
-                </section>
-                <section class="card pad game-card">
-                    <h3>Oyun tövsiyəsi</h3>
-                    <div class="game-tile"><img class="game-art" src="/ok-game-bottle.jpg" alt="" width="400" height="400"></div>
-                    <div class="row-between">
-                        <div><b>Şüşə fırlat</b><br><small class="muted" id="tables-count">masalar açıqdır</small></div>
-                        <a class="btn btn-rose" href="/game-v2">Oyna</a>
-                    </div>
-                </section>
-            </aside>
-        </div>
-        <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menyu" hidden>
-            <div class="drawer-top">
-                <button class="ic" id="drawer-close" type="button" aria-label="Menyunu bağla"><svg><use href="#i-x"/></svg></button>
-                <form class="search" id="drawer-search" role="search">
-                    <label class="sr" for="dq">Saytda axtar</label>
-                    <input id="dq" placeholder="Saytda axtar" autocomplete="off">
-                    <svg width="16" height="16"><use href="#i-search"/></svg>
-                </form>
-            </div>
-            <a class="drawer-me" href="#profil">
-                <span id="drawer-av"></span>
-                <span><b id="drawer-name">Profilim</b><small>Öz profilinə keç</small></span>
-            </a>
-            <a class="btn btn-ghost center-text" href="#lent" id="drawer-post">+ Dərc et</a>
-            <div class="ss-switch2" role="group" aria-label="Dizayn seçimi">
-                <button type="button" data-qoca="1" aria-pressed="false">Qoca style</button>
-                <button type="button" aria-pressed="true">OK stil ✨</button>
-            </div>
-            <nav class="tiles" aria-label="Bölmələr">
-                <a class="tile" href="#bildirisler" data-sec="bildirisler"><svg><use href="#i-bell"/></svg>Bildirişlər<span class="badge" data-badge="notif" hidden></span></a>
-                <a class="tile" href="#hadiseler" data-sec="hadiseler"><svg><use href="#i-heart-o"/></svg>Hadisələr</a>
-                <a class="tile" href="#qonaqlar" data-sec="qonaqlar"><svg><use href="#i-steps"/></svg>Qonaqlar<span class="badge" data-badge="guests" hidden></span></a>
-                <a class="tile" href="#lent" data-sec="lent"><svg><use href="#i-feed"/></svg>Lent</a>
-                <a class="tile" href="#mesajlar" data-sec="mesajlar"><svg><use href="#i-msg"/></svg>Mesajlar<span class="badge" data-badge="msg" hidden></span></a>
-                <a class="tile" href="#muzakire" data-sec="muzakire"><svg><use href="#i-talk"/></svg>Müzakirə</a>
-                <a class="tile" href="#dostlar" data-sec="dostlar"><svg><use href="#i-users"/></svg>Dostlar<span class="count" data-badge="req" hidden></span></a>
-                <a class="tile" href="#fotolar" data-sec="fotolar"><svg><use href="#i-photo"/></svg>Fotoşəkil</a>
-                <a class="tile" href="#klipler" data-sec="klipler"><svg><use href="#i-video"/></svg>Video</a>
-                <a class="tile" href="#qruplar" data-sec="qruplar"><svg><use href="#i-group"/></svg>Qruplar</a>
-                <a class="tile" href="#afisa" data-sec="afisa"><svg><use href="#i-flag"/></svg>Afişa</a>
-                <a class="tile" href="#oyunlar" data-sec="oyunlar"><svg><use href="#i-game"/></svg>Oyunlar</a>
-            </nav>
-            <nav class="drawer-list" aria-label="Digər bölmələr">
-                <a href="#hediyyeler" data-sec="hediyyeler"><svg><use href="#i-gift"/></svg>Hədiyyələr</a>
-                <a href="/game-v2"><svg><use href="#i-music"/></svg>Musiqi (oyunda DJ)</a>
-                <a href="#movzular" data-sec="movzular"><svg><use href="#i-topic"/></svg>Mövzular</a>
-                <a href="#bayramlar" data-sec="bayramlar"><svg><use href="#i-party"/></svg>Bayramlar</a>
-                <a href="#tanisliq" data-sec="tanisliq"><svg><use href="#i-date"/></svg>Tanışlıq</a>
-                <a href="#tenzimlemeler" data-sec="tenzimlemeler"><svg><use href="#i-cog"/></svg>Tənzimləmələr</a>
-                <a href="#anlar" data-sec="anlar"><svg><use href="#i-photo"/></svg>Anlar</a>
-                <a href="#elfecinler" data-sec="elfecinler"><svg><use href="#i-bookmark"/></svg>Əlfəcinlər</a>
-                <div class="toggle">
-                    <span><svg><use href="#i-ghost"/></svg>Gözəgörünməz</span>
-                    <button class="switch" id="ghost-m" type="button" aria-pressed="false" aria-label="Gözəgörünməz"></button>
-                </div>
-                <a href="#odenisler" data-sec="odenisler"><svg><use href="#i-wallet"/></svg>Ödənişlər və abunəliklər</a>
-                <a href="#magaza" data-sec="magaza"><svg><use href="#i-wallet"/></svg>Mağaza (kristal, ürək, VIP)</a>
-                <a href="#yardim" data-sec="yardim"><svg><use href="#i-topic"/></svg>Yardım</a>
-                <button type="button" id="theme-btn-m"><svg><use href="#i-moon"/></svg>Mövzu: işıqlı / qaranlıq</button>
-                <button type="button" data-qoca="1"><svg><use href="#i-cog"/></svg>Qoca style (köhnə dizayn)</button>
-                <button type="button" id="logout-btn-m"><svg><use href="#i-out"/></svg>Çıxış</button>
-            </nav>
-        </div>
-        <div class="modal" id="modal" hidden>
-            <div class="modal-box" role="dialog" aria-modal="true" aria-label="Pəncərə">
-                <button class="modal-x" id="modal-x" type="button" aria-label="Bağla">✕</button>
-                <div id="modal-body"></div>
-            </div>
-        </div>
-        <div class="toast" id="toast" role="status" hidden></div>
     </div>
-    <script src="/ok-i18n-dict.js?v=3"></script>
-    <script src="/ok-i18n.js?v=2"></script>
-    <script src="/ok-lobby.js?v=12"></script>
-    <script src="/super-ghost.js?v=1" defer="defer"></script>
+
+    <!-- Açılan Menyü -->
+    <div class="dropdown-menu" id="dropdown-menu">
+        <div class="dropdown-item" onclick="openModal('modal-messages')">💬 Mesajlar</div>
+        <div class="dropdown-item" onclick="openModal('modal-achievements')">🏆 Başarılar <span class="red-dot"></span></div>
+        <div class="dropdown-item" onclick="openModal('modal-points')">📊 Puanlar</div>
+        <div class="dropdown-item" onclick="openModal('modal-bottles')">🍾 Şişe</div>
+        <div class="dropdown-item" onclick="openModal('modal-styles')">🖼️ Stil</div>
+        <div class="dropdown-item" onclick="openModal('modal-boosters')">⚡ Booster'lar</div>
+    </div>
+
+    <!-- Masa və Şüşə -->
+    <div class="table-container">
+        <div class="player p-top-left">
+            <img src="https://via.placeholder.com/60" alt="Player">
+            <div class="name">Spokoynıy</div>
+        </div>
+        <div class="player p-top-right">
+            <img src="https://via.placeholder.com/60" alt="Player">
+            <div class="name">Cran</div>
+        </div>
+
+        <div class="game-status">Kızların oyunu başlatmasını bekleniyor</div>
+
+        <div class="bottle-container">
+            <div class="bottle" id="bottle"></div>
+        </div>
+
+        <div class="player p-bottom">
+            <img src="https://via.placeholder.com/60" alt="Player" onclick="openModal('modal-profile-settings')" style="cursor:pointer">
+            <div class="name">Əli</div>
+        </div>
+    </div>
+
+    <!-- Çat Hissəsi -->
+    <div class="chat-section">
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg"><span>Farhod_571:</span> Arazchi</div>
+            <div class="chat-msg"><span>Nomalum:</span> Eee bayram qilayiiiiik</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" placeholder="Mesaj yaz...">
+            <button>➔</button>
+        </div>
+    </div>
+
+    <!-- MODALLAR (Pop-up pəncərələr) -->
+    
+    <!-- Kalp Al Modal -->
+    <div class="modal-overlay" id="modal-heart">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Kalp al</div>
+            <p style="text-align:center;">Qo balansınız: <b>7</b></p>
+            <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
+                <button class="icon-btn" style="width:100%; justify-content:center;">❤️ 500 — 500 Qo</button>
+                <button class="icon-btn" style="width:100%; justify-content:center;">❤️ 1000 — 1000 Qo</button>
+                <button class="icon-btn" style="width:100%; justify-content:center;">❤️ 5000 — 5000 Qo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Həftənin Reytinqi Modal -->
+    <div class="modal-overlay" id="modal-rank">
+        <div class="modal-card" style="background:#0f172a; color:#fff;">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title" style="color:#38bdf8;">Həftənin Reytinqi</div>
+            <p>Sənin xalın: <b>87 xal</b> (#-)</p>
+            <hr style="margin:10px 0; opacity:0.2;">
+            <p>🏆 <b>Mükafatlar:</b></p>
+            <p>1-ci: 100 AZN</p>
+            <p>2-ci: 5000 ❤️</p>
+            <p>3-cü: 3000 ❤️</p>
+        </div>
+    </div>
+
+    <!-- Liqa Siyahısı Modal -->
+    <div class="modal-overlay" id="modal-leagues">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Lig Sıralaması</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div>💎 Elmas ligi</div>
+                <div>❇️ Zümrüt ligi</div>
+                <div>💗 Yakut ligi</div>
+                <div>🔷 Safir ligi</div>
+                <div>🥇 Altın lig</div>
+                <div>🥈 Gümüş lig</div>
+                <div>🥉 Bronz lig</div>
+                <div style="font-weight:bold; color:#d32f2f;">🪨 Taş lig (Sizin lig)</div>
+                <div>🪵 Tahta lig</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ayarlar Modal -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Ayarlar</div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <label><input type="checkbox" checked> Öpüşləri qəbul et</label>
+                <label><input type="checkbox" checked> Sesler</label>
+                <label><input type="checkbox" checked> Müzik</label>
+                <button class="icon-btn orange" onclick="openModal('modal-profile-settings')">Profil Ayarları</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profil Ayarları Modal -->
+    <div class="modal-overlay" id="modal-profile-settings">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Profil Ayarları</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <label>Adı:</label>
+                <input type="text" value="Əli" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+                <label>Cinsiyet:</label>
+                <div>
+                    <label><input type="radio" name="g" checked> Oğlan</label>
+                    <label><input type="radio" name="g"> Qız</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Başarılar Modal -->
+    <div class="modal-overlay" id="modal-achievements">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Başarılarım ⭐ 0/333</div>
+            <p style="text-align:center;">Tamamlanan və kilitli uğurlar siyahısı.</p>
+        </div>
+    </div>
+
+    <!-- Şişə Seçimi Modal -->
+    <div class="modal-overlay" id="modal-bottles">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Şişeyi Değiştir</div>
+            <p style="text-align:center;">Seçilə bilən şüşələr kolleksiyası.</p>
+        </div>
+    </div>
+
+    <!-- Booster Modal -->
+    <div class="modal-overlay" id="modal-boosters">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModals()">✕</div>
+            <div class="modal-title">Booster'lar</div>
+            <p style="text-align:center;">Gücləndiricilər və liqa gücləndiriciləri.</p>
+        </div>
+    </div>
+
+    <script>
+        // Dropdown açılıb-bağlanması
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        window.addEventListener('click', () => {
+            dropdownMenu.classList.remove('active');
+        });
+
+        // Modalların idarəsi
+        function openModal(id) {
+            closeModals();
+            const modal = document.getElementById(id);
+            if(modal) modal.classList.add('active');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        // Şüşə fırlatmaq məntiqi
+        const bottle = document.getElementById('bottle');
+        let currentRotation = 0;
+
+        bottle.parentElement.addEventListener('click', () => {
+            const randomSpin = Math.floor(Math.random() * 1440) + 720;
+            currentRotation += randomSpin;
+            bottle.style.transition = 'transform 2s cubic-bezier(0.15, 0.85, 0.25, 1)';
+            bottle.style.transform = `rotate(${currentRotation}deg)`;
+        });
+    </script>
 </body>
 </html>
