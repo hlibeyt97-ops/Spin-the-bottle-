@@ -19,7 +19,130 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            position: relative;
         }
+
+        /* Üst Panel */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+        .top-left, .top-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-btn {
+            background: #d32f2f;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .icon-btn.orange {
+            background: #ff9800;
+        }
+        .badge-tag {
+            background: #d32f2f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .circle-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff9800;
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .circle-btn .red-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+            border: 1px solid #fff;
+        }
+        .table-info {
+            background: #ff9800;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Açılan Menyü (Dropdown) */
+        .dropdown-menu {
+            position: absolute;
+            top: 55px;
+            right: 15px;
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            width: 170px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .dropdown-menu.active {
+            display: flex;
+        }
+        .dropdown-item {
+            padding: 12px 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            position: relative;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+        .dropdown-item .red-dot {
+            width: 8px;
+            height: 8px;
+            background: red;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
         /* Oyun Masası */
         .table-container {
             position: relative;
@@ -27,6 +150,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        /* Oyun Status Mesajı */
+        .game-status {
+            position: absolute;
+            top: 38%;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            pointer-events: none;
         }
 
         /* Fırlanacaq Şüşə (Coca-Cola Dizaynı) */
@@ -50,7 +187,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* Şüşənin qapağı */
         .bottle::before {
             content: '';
             position: absolute;
@@ -63,7 +199,6 @@
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.6);
         }
 
-        /* Üzərindəki qırmızı Coca-Cola etiketi */
         .bottle::after {
             content: 'Coca-Cola';
             position: absolute;
@@ -81,32 +216,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.4);
             transform: rotate(-3deg);
         }
-
-        /* Oyunçu yerləri */
-        .player {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .player img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 2px solid #ff9800;
-            object-fit: cover;
-        }
-        .player .name {
-            margin-top: 5px;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-
-        .p-top-left { top: 20px; left: 30px; }
-        .p-top-right { top: 20px; right: 30px; }
-        .p-bottom { bottom: 20px; }
 
         /* Çat hissəsi */
         .chat-section {
@@ -154,25 +263,41 @@
 </head>
 <body>
 
-    <!-- Masa və Oyunçular -->
+    <!-- Üst Panel -->
+    <div class="top-bar">
+        <div class="top-left">
+            <button class="icon-btn">❤️ 2</button>
+            <button class="icon-btn orange">⚔️</button>
+            <span class="badge-tag">#20</span>
+        </div>
+        <div class="top-right">
+            <div class="table-info">Masa 510 🔄</div>
+            <button class="circle-btn" id="settings-btn">⚙️</button>
+            <button class="circle-btn" id="menu-toggle">
+                ☰
+                <span class="red-dot"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Açılan Menyü -->
+    <div class="dropdown-menu" id="dropdown-menu">
+        <div class="dropdown-item">💬 Mesajlar</div>
+        <div class="dropdown-item">🏆 Başarılar <span class="red-dot"></span></div>
+        <div class="dropdown-item">📊 Puanlar</div>
+        <div class="dropdown-item">🍾 Şişe</div>
+        <div class="dropdown-item">🖼️ Stil</div>
+        <div class="dropdown-item">⚡ Booster'lar</div>
+    </div>
+
+    <!-- Masa və Şüşə -->
     <div class="table-container">
-        <div class="player p-top-left">
-            <img src="https://via.placeholder.com/60" alt="Player">
-            <div class="name">Spokoynıy</div>
-        </div>
-        <div class="player p-top-right">
-            <img src="https://via.placeholder.com/60" alt="Player">
-            <div class="name">Cran</div>
-        </div>
+        <!-- Oyun Statusu -->
+        <div class="game-status">Kızların oyunu başlatmasını bekleniyor</div>
 
         <!-- Fırlanacaq Şüşə -->
         <div class="bottle-container">
             <div class="bottle" id="bottle"></div>
-        </div>
-
-        <div class="player p-bottom">
-            <img src="https://via.placeholder.com/60" alt="Player">
-            <div class="name">Əli</div>
         </div>
     </div>
 
@@ -189,6 +314,20 @@
     </div>
 
     <script>
+        // Menyü açılıb-bağlanması
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        window.addEventListener('click', () => {
+            dropdownMenu.classList.remove('active');
+        });
+
+        // Şüşə fırlatmaq məntiqi
         const bottle = document.getElementById('bottle');
         let currentRotation = 0;
 
