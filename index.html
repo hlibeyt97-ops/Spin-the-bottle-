@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spin The Bottle - Ideal Edition</title>
+    <title>Spin The Bottle - Original Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -14,7 +14,8 @@
             user-select: none;
         }
         body {
-            background: radial-gradient(circle at center, #f0a54a 0%, #d88330 60%, #b25e19 100%);
+            /* Orijinal şəkildəki isti taxta fon tonu */
+            background: linear-gradient(135deg, #c68b59 0%, #a06232 50%, #7c451b 100%);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -29,7 +30,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 15px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(8px);
             z-index: 100;
         }
@@ -145,99 +146,104 @@
         .dropdown-item:hover {
             background: #f5f5f5;
         }
-        .dropdown-item .red-dot {
-            width: 8px;
-            height: 8px;
-            background: red;
-            border-radius: 50%;
-            margin-left: auto;
-        }
 
-        /* Game Arena / Table */
+        /* Oyun Masası (Taxta naxışlı masa və mərkəzi ornament) */
         .table-container {
             position: relative;
             flex: 1;
-            background: radial-gradient(circle, #e69d53 0%, #b36122 70%, #6e3205 100%);
+            background: 
+                radial-gradient(circle at center, rgba(220, 150, 90, 0.4) 0%, rgba(90, 45, 15, 0.7) 80%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 4px);
             display: flex;
             justify-content: center;
             align-items: center;
-            border-bottom: 2px solid #4a2103;
+            overflow: hidden;
+            border-bottom: 3px solid #4a2103;
+        }
+
+        /* Şəkildəki mərkəzi qızılı/taxta naxışlı dayaq (Rosette ornament) */
+        .table-center-ornament {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            background: radial-gradient(circle, #e5b365 0%, #c48c3b 60%, #99621b 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 8px 20px rgba(0,0,0,0.4);
+            z-index: 5;
+            border: 4px solid #7c451b;
+        }
+        /* Ornamentin daxili çiçək/yarpaq Formaları */
+        .table-center-ornament::before {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: conic-gradient(from 0deg, #d49e49, #b57a2c, #d49e49, #b57a2c, #d49e49);
+            border-radius: 35%;
+            opacity: 0.85;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
         }
 
         .game-status {
             position: absolute;
-            top: 15%;
+            top: 15px;
             font-size: 13px;
             font-weight: bold;
             color: #fff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.4);
             padding: 6px 16px;
             border-radius: 20px;
             pointer-events: none;
-            z-index: 5;
+            z-index: 20;
         }
 
-        /* Coca-Cola Bottle Style */
+        /* Orijinal Yaşıl Şüşə Modeli */
         .bottle-container {
             position: absolute;
-            width: 100px;
-            height: 160px;
+            width: 120px;
+            height: 190px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 10;
+            z-index: 15;
         }
 
         .bottle {
-            width: 42px;
-            height: 130px;
-            background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(255,255,255,0.4) 30%, rgba(60, 20, 10, 0.95) 55%, rgba(20, 5, 2, 0.98) 100%), #2b1205;
-            border-radius: 20px 20px 10px 10px;
+            width: 44px;
+            height: 140px;
+            background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(120, 220, 120, 0.3) 30%, #2e7d32 50%, #1b5e20 100%);
+            border-radius: 22px 22px 10px 10px;
             position: relative;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.3);
             transition: transform 3s cubic-bezier(0.15, 0.9, 0.25, 1);
         }
 
+        /* Şüşənin qapağı */
         .bottle::before {
             content: '';
             position: absolute;
-            top: -10px;
-            left: 13px;
+            top: -12px;
+            left: 14px;
             width: 14px;
-            height: 10px;
+            height: 12px;
             background: #d32f2f;
             border-radius: 4px 4px 0 0;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.6);
         }
 
-        .bottle::after {
-            content: 'Coca-Cola';
-            position: absolute;
-            top: 45px;
-            left: 1px;
-            width: 38px;
-            height: 18px;
-            background: #d32f2f;
-            color: white;
-            font-size: 6px;
-            font-weight: bold;
-            text-align: center;
-            line-height: 18px;
-            border-radius: 3px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-            transform: rotate(-3deg);
-        }
-
-        /* Players */
+        /* Oyuncular */
         .player {
             position: absolute;
             display: flex;
             flex-direction: column;
             align-items: center;
-            z-index: 2;
+            z-index: 15;
         }
         .player img {
             width: 60px;
@@ -380,7 +386,7 @@
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-left">
-            <button class="icon-btn" onclick="openModal('modal-heart')">❤️ 2</button>
+            <button class="icon-btn" onclick="openModal('modal-heart')">❤️ 12</button>
             <button class="icon-btn orange" onclick="openModal('modal-rank')">⚔️</button>
             <div class="badge-group" onclick="openModal('modal-leagues')">
                 <span class="number">#18</span>
@@ -388,7 +394,7 @@
             </div>
         </div>
         <div class="top-right">
-            <div class="table-info">Masa 510 🔄</div>
+            <div class="table-info">Masa 89 🔄</div>
             <button class="circle-btn" id="settings-btn" onclick="openModal('modal-settings')">⚙️</button>
             <button class="circle-btn" id="menu-toggle">
                 ☰
@@ -400,7 +406,7 @@
     <!-- Dropdown Menu -->
     <div class="dropdown-menu" id="dropdown-menu">
         <div class="dropdown-item" onclick="openModal('modal-achievements')">🏆 Başarılar <span class="red-dot"></span></div>
-        <div class="dropdown-item" onclick="openModal('modal-bottles')">🍾 Şişe</div>
+        <div class="dropdown-item" onclick="openModal('modal-bottles')">🍾 Şişə</div>
         <div class="dropdown-item" onclick="openModal('modal-boosters')">⚡ Booster'lar</div>
     </div>
 
@@ -408,14 +414,17 @@
     <div class="table-container">
         <div class="player p-top-left">
             <img src="https://via.placeholder.com/60" alt="Player 1">
-            <div class="name">Спокойный 34</div>
+            <div class="name">Çat</div>
         </div>
         <div class="player p-top-right">
             <img src="https://via.placeholder.com/60" alt="Player 2">
-            <div class="name">Cran</div>
+            <div class="name">dalgücük_32</div>
         </div>
 
         <div class="game-status" id="gameStatus">Şişəni çevirmək üçün toxun! 🍾</div>
+
+        <!-- Mərkəzi Ornament Dayağı -->
+        <div class="table-center-ornament"></div>
 
         <!-- Bottle Element -->
         <div class="bottle-container" onclick="spinBottle()">
@@ -431,8 +440,8 @@
     <!-- Chat Area -->
     <div class="chat-section">
         <div class="chat-messages" id="chat">
-            <div class="chat-msg"><span class="user">Farhod_571:</span> Arazchi</div>
-            <div class="chat-msg"><span class="user">Nomalum:</span> Eee bayram qilayliiiik</div>
+            <div class="chat-msg"><span class="user">dalgücük_32:</span> Bez cat</div>
+            <div class="chat-msg"><span class="user">dalgücük_32:</span> Go</div>
         </div>
         <div class="chat-input-area">
             <input type="text" id="msgInput" placeholder="Mesaj yaz..." onkeypress="handleKeyPress(event)">
@@ -445,11 +454,7 @@
         <div class="modal-card">
             <div class="modal-close" onclick="closeModals()">✕</div>
             <div class="modal-title">Kalp al</div>
-            <p style="text-align:center;">Qo balansınız: <b>7</b></p>
-            <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px;">
-                <button class="icon-btn" style="width:100%; justify-content:center;">❤️ 500 — 500 Qo</button>
-                <button class="icon-btn" style="width:100%; justify-content:center;">❤️ 1000 — 1000 Qo</button>
-            </div>
+            <p style="text-align:center;">Balansınız: <b>12</b></p>
         </div>
     </div>
 
@@ -457,7 +462,7 @@
         <div class="modal-card" style="background:#0f172a; color:#fff;">
             <div class="modal-close" onclick="closeModals()">✕</div>
             <div class="modal-title" style="color:#38bdf8;">Həftənin Reytinqi</div>
-            <p>Sənin xalın: <b>87 xal</b> (#-)</p>
+            <p>Sənin xalın: <b>87 xal</b></p>
         </div>
     </div>
 
@@ -465,11 +470,6 @@
         <div class="modal-card">
             <div class="modal-close" onclick="closeModals()">✕</div>
             <div class="modal-title">Lig Sıralaması</div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <div>💎 Elmas ligi</div>
-                <div>🥇 Altın lig</div>
-                <div style="font-weight:bold; color:#d32f2f;">🪨 Taş lig (Sizin lig)</div>
-            </div>
         </div>
     </div>
 
@@ -477,11 +477,6 @@
         <div class="modal-card">
             <div class="modal-close" onclick="closeModals()">✕</div>
             <div class="modal-title">Ayarlar</div>
-            <div style="display:flex; flex-direction:column; gap:12px;">
-                <label><input type="checkbox" checked> Sesler</label>
-                <label><input type="checkbox" checked> Müzik</label>
-                <button class="icon-btn orange" onclick="openModal('modal-profile-settings')">Profil Ayarları</button>
-            </div>
         </div>
     </div>
 
@@ -500,7 +495,7 @@
     <div class="modal-overlay" id="modal-achievements">
         <div class="modal-card">
             <div class="modal-close" onclick="closeModals()">✕</div>
-            <div class="modal-title">Başarılarım ⭐ 0/333</div>
+            <div class="modal-title">Başarılarım</div>
         </div>
     </div>
 
@@ -583,7 +578,7 @@
                 const msg = document.createElement('div');
                 msg.className = 'chat-msg';
                 const currentName = document.getElementById('userName').innerText;
-                msg.innerHTML = `<span class="user">${currentName}:</span> ${escapeHTML(message)}`;
+                msg.innerHTML = `<span class="user">${escapeHTML(currentName)}:</span> ${escapeHTML(message)}`;
                 chat.appendChild(msg);
                 chat.scrollTop = chat.scrollHeight;
                 input.value = "";
