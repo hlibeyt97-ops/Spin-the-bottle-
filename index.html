@@ -133,7 +133,45 @@
             margin-left: 8px;
             border-radius: 20px;
             cursor: pointer;
-        }
+        }.bottle {
+    width: 45px;
+    height: 140px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(46,125,50,0.8) 50%, rgba(27,94,32,0.9) 100%);
+    border-radius: 20px 20px 10px 10px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bottle::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 14px;
+    width: 17px;
+    height: 12px;
+    background: #d32f2f;
+    border-radius: 4px 4px 0 0;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.bottle::after {
+    content: 'COCA';
+    position: absolute;
+    top: 45px;
+    left: 5px;
+    width: 33px;
+    height: 18px;
+    background: #d32f2f;
+    color: white;
+    font-size: 8px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
     </style>
 </head>
 <body>
